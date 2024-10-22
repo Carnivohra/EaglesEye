@@ -1,11 +1,10 @@
 eagleseye = {
     version = "0.1.1",
-    supports = { "1.0.1.4" },
-    ticks = {}
+    supports = { "1.0.1.4" }
 }
 
 function eagleseye:start()
-    print("Checking for updates ...")
+    print("EaglesEye is checking for updates ...")
     self:update_check()
 
     if not self:supported(_CS2DVERSION) then
@@ -14,8 +13,8 @@ function eagleseye:start()
         return
     end
 
-    eagleseye:parse_hooks()
-    --
+    self:parse_hooks()
+    --self:save_demo()
 end
 
 function eagleseye:update_check()
@@ -27,7 +26,7 @@ function eagleseye:update_check()
         "My Discord: carnivohra")
     else
         if _CS2DVERSION ~= latest_cs2d_version then
-            print("New CS2D update: Version '" .. latest_cs2d_version .. "' is live.")
+            print("New CS2D update found. Version '" .. latest_cs2d_version .. "' is live now.")
             -- cs2d update menu
         end
     end
@@ -40,7 +39,7 @@ function eagleseye:update_check()
         "My Discord: carnivohra")
     else 
         if eagleseye.version ~= latest_eagleseye_version then
-            print("New EaglesEye update: Version '" .. latest_eagleseye_version .. "' is live.")
+            print("New EaglesEye update found: Version '" .. latest_eagleseye_version .. "' is live now.")
             -- it is highly recommended to use the latest eagleseye version for more security and features.
             -- eagleseye update menu
         end
@@ -82,13 +81,7 @@ function eagleseye:download(url)
 end
 
 function eagleseye:download_file(url, file_name)
-    self:powershell('wget "' .. url .. '" -OutFile ' .. file_name)
-end
-
-function eagleseye:powershell(input)
-    local powershell = io.popen("powershell -command -", "w")
-    powershell:write(input)
-    powershell:close()
+    os.execute("CURL -O " .. file_name .. " " .. url)
 end
 
 function eagleseye:file_exist(file_name)
@@ -106,7 +99,7 @@ function eagleseye:starts_with(chars, starts_with)
 end
 
 function eagleseye:delete_file(file_name)
-    self:powershell("rm " .. file_name)
+    os.execute("DEL " .. file_name)
 end
 
 function eagleseye:latest_eagleseye_version()
@@ -231,6 +224,9 @@ function eagleseye:parse_hooks()
     end
 end
 
+eagleseye.ticks = {}
+eagleseye.first_tick_time = nil
+
 function eagleseye:action(source, type, values)
     if source == "hook" and type == "always" then self:tick() end
     if #self.ticks == 0 then self:tick() end
@@ -243,6 +239,26 @@ end
 function eagleseye:tick()
     local tick = { time = os.clock(), actions = {} }
     self.ticks[#self.ticks + 1] = tick
+
+    if self.first_tick_time == nil then self.first_tick_time = os.date() end
+end
+
+function eagleseye:save_demo()
+    self:create_dir("demos")
+
+    local demo = self:encode(self.first_tick_time)
+    self.first_tick_time = nil
+
+    for i = 1, #self.ticks do
+    end
+end
+
+function eagleseye:encode(field)
+    return #field .. field
+end
+
+function eagleseye:create_dir(dir)
+    os.execute("MKDIR " .. dir)
 end
 
 eagleseye:start()
