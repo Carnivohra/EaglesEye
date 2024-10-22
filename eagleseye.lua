@@ -1,12 +1,12 @@
 eagleseye = {
-    version = "0.1",
+    version = "0.1.1",
     supports = { "1.0.1.4" },
     ticks = {}
 }
 
 function eagleseye:start()
     print("Checking for updates ...")
-    self:updateCheck()
+    self:update_check()
 
     if not self:supported(_CS2DVERSION) then
         print("Cannot start EaglesEye. This EaglesEye version does not support CS2D version '" .. _CS2DVERSION .. "'.\n" ..
@@ -18,7 +18,7 @@ function eagleseye:start()
     --
 end
 
-function eagleseye:updateCheck()
+function eagleseye:update_check()
     local latest_cs2d_version = self:latest_cs2d_version()
 
     if latest_cs2d_version == nil then 
